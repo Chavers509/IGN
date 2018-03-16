@@ -1,0 +1,23 @@
+---
+# Ansible playbook to update & upgrade the selected <Customer> hosts
+# anything in < > be sure to edit!
+
+- hosts: <EDIT THIS>
+  remote_user: <User credentials to use>
+  become: yes
+  become_method: sudo
+
+  tasks:
+  - name: Run the equivalent of "apt-get update" as a separate step
+    apt:
+        update_cache: yes
+  - name: Update (dist) all packages to the latest version
+    apt:
+        upgrade: dist
+  - name: Check if packages need to be autoremoved
+    command: apt-get --dry-run autoremove
+    register: check_autoremove
+    changed_when: False
+  - name: Autoremove unused packages
+    command: apt-get -y autoremove
+    when: "'packages will be REMOVED' in check_autoremove.stdout"

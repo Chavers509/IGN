@@ -1,0 +1,32 @@
+---
+# Ansible playbook to sync Jenkins and Ansible playbooks from Master to Slave 
+# CNC hosts.
+#
+
+- hosts: ign
+  remote_user: ansiadmin
+  become: yes
+  become_method: sudo
+
+  tasks:
+  - name: Run the equivalent of "apt-get update" as a separate step
+    apt:
+        update_cache: yes
+  - name: Update (dist) all packages to the latest version
+    apt:
+        upgrade: dist
+  - name: Check if packages need to be autoremoved
+    command: apt-get --dry-run autoremove
+    register: check_autoremove
+    changed_when: False
+  - name: Autoremove unused packages
+    command: apt-get -y autoremove
+    when: "'packages will be REMOVED' in check_autoremove.stdout"
+  - name: Install required software packages - git
+    command: apt-get install git
+  - name: Install required software packages - alpine
+    command: apt-get install alpine
+  - name: Install required software packages - lynx
+    command: apt-get install lynx
+
+

@@ -1,0 +1,11 @@
+---
+- hosts: localhost
+  connection: local
+  tasks:
+    - name: Update all packages to the latest version
+      become: true
+      apt:
+        update_cache: yes       
+        upgrade: dist
+#        autoclean: yes
+#        autoremove: yes
